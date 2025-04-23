@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:project_hibiki_point_mobile_app/res/colors.dart';
 
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     Size _screenSize = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
-        backgroundColor: AppColors.primaryWhite,
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
@@ -20,7 +18,6 @@ class DashboardScreen extends StatelessWidget {
 
                 ],
               ),
-              
             ],
           ),
         ),
