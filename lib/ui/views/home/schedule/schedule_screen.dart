@@ -8,10 +8,12 @@ class ScheduleScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Column(
-          children: <Widget>[
-            Text('Schedule')
-          ],
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+
+            ],
+          ),
         ),
       )
     );

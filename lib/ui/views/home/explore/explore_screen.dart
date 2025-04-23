@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_hibiki_point_mobile_app/res/colors.dart';
 
 class ExploreScreen extends StatelessWidget {
   const ExploreScreen({Key? key}) : super(key: key);
@@ -7,7 +8,14 @@ class ExploreScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Text('Stream'),
+        backgroundColor: AppColors.primaryWhite,
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+
+            ],
+          ),
+        ),
       )
     );
   }
