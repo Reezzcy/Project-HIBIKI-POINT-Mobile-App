@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:project_hibiki_point_mobile_app/res/assets.dart';
 import 'package:project_hibiki_point_mobile_app/res/colors.dart';
-import 'package:project_hibiki_point_mobile_app/ui/views/home/home_main.dart';
+import 'package:project_hibiki_point_mobile_app/ui/views/auth/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomeMain()),
+        MaterialPageRoute(builder: (context) => LoginScreen()),
       );
     });
   }
