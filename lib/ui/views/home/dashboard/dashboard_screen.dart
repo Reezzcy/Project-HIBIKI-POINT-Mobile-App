@@ -9,6 +9,7 @@ import 'package:project_hibiki_point_mobile_app/data/response/log_activity_with_
 import 'package:project_hibiki_point_mobile_app/res/colors.dart';
 import 'package:project_hibiki_point_mobile_app/ui/views/campaign/campaign_detail_screen.dart';
 import 'package:project_hibiki_point_mobile_app/ui/views/campaign/campaign_screen.dart';
+import 'package:project_hibiki_point_mobile_app/ui/views/notification/notification_screen.dart';
 import 'package:project_hibiki_point_mobile_app/ui/views/report/report_screen.dart';
 import 'package:project_hibiki_point_mobile_app/ui/views/task/task_screen.dart';
 
@@ -63,31 +64,44 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Container(
       width: _screenSize.width * 0.9,
       child: Row(
-        children: <Widget>[
-          CircleAvatar(
-            radius: 20,
-            backgroundImage: MemoryImage(base64Decode(user.avatarBase64)),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 5),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  'Hello!',
-                  style: TextStyle(
-                    fontSize: 12,
-                  ),
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: <Widget>[
+              CircleAvatar(
+                radius: 24,
+                backgroundImage: MemoryImage(base64Decode(user.avatarBase64)),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 5),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      'Hello!',
+                      style: TextStyle(
+                        fontSize: 12,
+                      ),
+                    ),
+                    Text(
+                      user.name,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold
+                      ),
+                    )
+                  ],
                 ),
-                Text(
-                  user.name,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold
-                  ),
-                )
-              ],
-            ),
+              )
+            ],
+          ),
+          IconButton(
+            onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return NotificationScreen();
+              }));
+            },
+            icon: Icon(Icons.notifications, color: AppColors.primaryDarkBlue)
           )
         ],
       ),
@@ -254,7 +268,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ],
         ),
-        margin: const EdgeInsets.symmetric(vertical: 5.0),
         child: ListTile(
           leading: Column(
             mainAxisAlignment: MainAxisAlignment.center,

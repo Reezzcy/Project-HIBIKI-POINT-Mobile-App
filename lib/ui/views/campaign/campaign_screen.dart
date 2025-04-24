@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:project_hibiki_point_mobile_app/data/models/campaign_model.dart';
+import 'package:project_hibiki_point_mobile_app/data/response/campaign_with_attachment_response.dart';
 import 'package:project_hibiki_point_mobile_app/res/colors.dart';
 import 'package:project_hibiki_point_mobile_app/ui/views/campaign/campaign_add_form.dart';
 import 'package:project_hibiki_point_mobile_app/ui/views/campaign/campaign_detail_screen.dart';
@@ -13,7 +16,7 @@ class CampaignScreen extends StatefulWidget{
 }
 
 class _CampaignScreenState extends State<CampaignScreen> {
-  List<CampaignModel> _campaignList = dummyCampaignList;
+  List<CampaignWithAttachmentResponse> _campaignWithAttachmentList = dummyCampaignWithAttachmentList;
 
   @override
   Widget build(BuildContext context) {
@@ -21,11 +24,7 @@ class _CampaignScreenState extends State<CampaignScreen> {
       child: Scaffold(
         backgroundColor: AppColors.primaryDarkBlue,
         appBar: _appBarSection(context),
-        body: Column(
-          children: [
-            _campaignListSection()
-          ],
-        ),
+        body: _campaignListSection(),
         floatingActionButton: _floatingButton(context),
       )
     );
@@ -52,27 +51,44 @@ class _CampaignScreenState extends State<CampaignScreen> {
   }
 
   Widget _floatingButton(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: () {
-        Navigator.push(context,
-          MaterialPageRoute(builder: (context) {
-            return CampaignAddForm();
-          })
-        );
-      },
-      backgroundColor: AppColors.primaryWhite,
-      child: Icon(Icons.add, color: AppColors.primaryDarkBlue),
+    return Container(
+      width: 100,
+      height: 50,
+      child: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context,
+            MaterialPageRoute(builder: (context) {
+              return CampaignAddForm();
+            })
+          );
+        },
+        backgroundColor: AppColors.primaryWhite,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Icon(Icons.add, color: AppColors.primaryDarkBlue),
+            Text(
+              'Create',
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColors.primaryDarkBlue,
+                fontWeight: FontWeight.bold
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 
   Widget _campaignListSection() {
     return Expanded(
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.symmetric(horizontal: 20),
         child: ListView.builder(
-          itemCount: _campaignList.length,
+          itemCount: _campaignWithAttachmentList.length,
           itemBuilder: (context, index) {
-            CampaignModel campaign = _campaignList[index];
+            CampaignWithAttachmentResponse campaign = _campaignWithAttachmentList[index];
             return _campaignItem(campaign);
           },
         ),
@@ -80,7 +96,7 @@ class _CampaignScreenState extends State<CampaignScreen> {
     );
   }
 
-  Widget _campaignItem(CampaignModel campaign) {
+  Widget _campaignItem(CampaignWithAttachmentResponse campaign) {
     return InkWell(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -92,16 +108,29 @@ class _CampaignScreenState extends State<CampaignScreen> {
         margin: EdgeInsets.symmetric(vertical: 8),
         child: Padding(
           padding: EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(campaign.title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              SizedBox(height: 4),
-              Text(campaign.description, maxLines: 2, overflow: TextOverflow.ellipsis),
-              SizedBox(height: 4),
-              Text("Status: ${campaign.status}"),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              CircleAvatar(
+                radius: 16,
+                backgroundImage: MemoryImage(
+                  base64Decode(campaign.attachment.file)
+                )
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  campaign.title,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16
+                  ),
+                ),
+              ),
+              Icon(Icons.edit)
             ],
-          ),
+          )
         ),
       ),
     );
