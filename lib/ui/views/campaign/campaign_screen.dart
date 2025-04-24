@@ -1,22 +1,20 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:project_hibiki_point_mobile_app/data/models/campaign_model.dart';
 import 'package:project_hibiki_point_mobile_app/data/response/campaign_with_attachment_response.dart';
 import 'package:project_hibiki_point_mobile_app/res/colors.dart';
 import 'package:project_hibiki_point_mobile_app/ui/views/campaign/campaign_add_form.dart';
 import 'package:project_hibiki_point_mobile_app/ui/views/campaign/campaign_detail_screen.dart';
 
 class CampaignScreen extends StatefulWidget{
-  const CampaignScreen({Key? key}) : super(key: key);
+  const CampaignScreen({super.key});
 
   @override
   State<CampaignScreen> createState() => _CampaignScreenState();
 }
 
 class _CampaignScreenState extends State<CampaignScreen> {
-  List<CampaignWithAttachmentResponse> _campaignWithAttachmentList = dummyCampaignWithAttachmentList;
+  final List<CampaignWithAttachmentResponse> _campaignWithAttachmentList = dummyCampaignWithAttachmentList;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +31,7 @@ class _CampaignScreenState extends State<CampaignScreen> {
   PreferredSizeWidget _appBarSection(BuildContext context) {
     return AppBar(
       backgroundColor: AppColors.primaryDarkBlue,
-      title: Text(
+      title: const Text(
         'My Campaign',
         style: TextStyle(
             color: AppColors.primaryWhite,
@@ -45,25 +43,25 @@ class _CampaignScreenState extends State<CampaignScreen> {
         onPressed: (){
           Navigator.pop(context);
         },
-        icon: Icon(Icons.arrow_back_ios, color: AppColors.primaryWhite)
+        icon: const Icon(Icons.arrow_back_ios, color: AppColors.primaryWhite)
       )
     );
   }
 
   Widget _floatingButton(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 100,
       height: 50,
       child: FloatingActionButton(
         onPressed: () {
           Navigator.push(context,
             MaterialPageRoute(builder: (context) {
-              return CampaignAddForm();
+              return const CampaignAddForm();
             })
           );
         },
         backgroundColor: AppColors.primaryWhite,
-        child: Row(
+        child: const Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             Icon(Icons.add, color: AppColors.primaryDarkBlue),
@@ -84,7 +82,7 @@ class _CampaignScreenState extends State<CampaignScreen> {
   Widget _campaignListSection() {
     return Expanded(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: ListView.builder(
           itemCount: _campaignWithAttachmentList.length,
           itemBuilder: (context, index) {
@@ -105,9 +103,9 @@ class _CampaignScreenState extends State<CampaignScreen> {
       },
       child: Card(
         elevation: 4,
-        margin: EdgeInsets.symmetric(vertical: 8),
+        margin: const EdgeInsets.symmetric(vertical: 8),
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
@@ -118,17 +116,17 @@ class _CampaignScreenState extends State<CampaignScreen> {
                 )
               ),
               Container(
-                margin: EdgeInsets.symmetric(horizontal: 10),
+                margin: const EdgeInsets.symmetric(horizontal: 10),
                 child: Text(
                   campaign.title,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16
                   ),
                 ),
               ),
-              Icon(Icons.edit)
+              const Icon(Icons.edit)
             ],
           )
         ),

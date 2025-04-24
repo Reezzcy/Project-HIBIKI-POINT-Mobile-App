@@ -2,9 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:project_hibiki_point_mobile_app/data/models/campaign_model.dart';
-import 'package:project_hibiki_point_mobile_app/data/models/log_activity_model.dart';
 import 'package:project_hibiki_point_mobile_app/data/models/user_model.dart';
-import 'package:project_hibiki_point_mobile_app/data/response/campaign_with_attachment_response.dart';
 import 'package:project_hibiki_point_mobile_app/data/response/log_activity_with_include_response.dart';
 import 'package:project_hibiki_point_mobile_app/res/colors.dart';
 import 'package:project_hibiki_point_mobile_app/ui/views/campaign/campaign_detail_screen.dart';
@@ -22,22 +20,21 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   UserModel user = dummyUser;
-  List<LogActivityWithIncludeResponse> _logActivityWithIncludeList = dummyLogWithIncludeList;
-  List<CampaignWithAttachmentResponse> _campaignWithAttachmentList = dummyCampaignWithAttachmentList;
-  List<CampaignModel> _campaignList = dummyCampaignList;
+  final List<LogActivityWithIncludeResponse> _logActivityWithIncludeList = dummyLogWithIncludeList;
+  final List<CampaignModel> _campaignList = dummyCampaignList;
 
   final _mapMenu = {
-    'Campaign': CampaignScreen(),
-    'Task': TaskScreen(),
-    'Report': ReportScreen(),
-    'Help': CampaignScreen(),
-    'Menu 5': CampaignScreen(),
-    'Menu 6': CampaignScreen(),
+    'Campaign': const CampaignScreen(),
+    'Task': const TaskScreen(),
+    'Report': const ReportScreen(),
+    'Help': const CampaignScreen(),
+    'Menu 5': const CampaignScreen(),
+    'Menu 6': const CampaignScreen(),
   };
 
   @override
   Widget build(BuildContext context) {
-    Size _screenSize = MediaQuery.of(context).size;
+    Size screenSize = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
         backgroundColor: AppColors.primaryWhite,
@@ -46,8 +43,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: <Widget>[
-                _profileSection(_screenSize),
-                _menuSection(_screenSize),
+                _profileSection(screenSize),
+                _menuSection(screenSize),
                 _activityTitleSection(),
                 _activitySection(),
                 _upcomingTitleSection(),
@@ -60,9 +57,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _profileSection(Size _screenSize) {
-    return Container(
-      width: _screenSize.width * 0.9,
+  Widget _profileSection(Size screenSize) {
+    return SizedBox(
+      width: screenSize.width * 0.9,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -73,11 +70,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 backgroundImage: MemoryImage(base64Decode(user.avatarBase64)),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 5),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
+                    const Text(
                       'Hello!',
                       style: TextStyle(
                         fontSize: 12,
@@ -85,7 +82,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     Text(
                       user.name,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold
                       ),
@@ -98,23 +95,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
           IconButton(
             onPressed: (){
               Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return NotificationScreen();
+                return const NotificationScreen();
               }));
             },
-            icon: Icon(Icons.notifications, color: AppColors.primaryDarkBlue)
+            icon: const Icon(Icons.notifications, color: AppColors.primaryDarkBlue)
           )
         ],
       ),
     );
   }
 
-  Widget _menuSection(Size _screenSize) {
+  Widget _menuSection(Size screenSize) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Container(
         height: 200,
         padding: const EdgeInsets.all(16),
-        width: _screenSize.width * 0.9,
+        width: screenSize.width * 0.9,
         decoration: BoxDecoration(
           color: AppColors.primaryDarkBlue,
           borderRadius: BorderRadius.circular(32),
@@ -123,7 +120,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Container(
-              width: _screenSize.width * 0.40,
+              width: screenSize.width * 0.40,
               decoration: BoxDecoration(
                 color: AppColors.primaryGray,
                 borderRadius: BorderRadius.circular(16),
@@ -132,17 +129,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(child: _menuIcon('Campaign', Icon(Icons.heart_broken))),
-                Expanded(child: _menuIcon('Report', Icon(Icons.note_rounded))),
-                Expanded(child: _menuIcon('Menu 5', Icon(Icons.numbers))),
+                Expanded(child: _menuIcon('Campaign', const Icon(Icons.heart_broken))),
+                Expanded(child: _menuIcon('Report', const Icon(Icons.note_rounded))),
+                Expanded(child: _menuIcon('Menu 5', const Icon(Icons.numbers))),
               ],
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(child: _menuIcon('Task', Icon(Icons.task))),
-                Expanded(child: _menuIcon('Help', Icon(Icons.help))),
-                Expanded(child: _menuIcon('Menu 6', Icon(Icons.numbers))),
+                Expanded(child: _menuIcon('Task', const Icon(Icons.task))),
+                Expanded(child: _menuIcon('Help', const Icon(Icons.help))),
+                Expanded(child: _menuIcon('Menu 6', const Icon(Icons.numbers))),
               ],
             ),
           ],
@@ -171,7 +168,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _activityTitleSection() {
     return Container(
       alignment: Alignment.centerLeft,
-      child: Text(
+      child: const Text(
         'Recenly Activities',
         textAlign: TextAlign.left,
         style: TextStyle(
@@ -185,7 +182,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _activitySection() {
     return Container(
       height: 50,
-      margin: EdgeInsets.only(top: 10, bottom: 20),
+      margin: const EdgeInsets.only(top: 10, bottom: 20),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: _logActivityWithIncludeList.length,
@@ -206,10 +203,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
       },
       child: Container(
         width: 120,
-        margin: EdgeInsets.only(right: 10),
+        margin: const EdgeInsets.only(right: 10),
         child: Card(
           child: Container(
-            padding: EdgeInsets.all(5),
+            padding: const EdgeInsets.all(5),
             alignment: Alignment.center,
             child: Text(
               logActivity.campaign.title,
@@ -224,7 +221,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _upcomingTitleSection() {
     return Container(
       alignment: Alignment.centerLeft,
-      child: Text(
+      child: const Text(
         'Upcoming Event',
         textAlign: TextAlign.left,
         style: TextStyle(
@@ -237,7 +234,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _upcomingEventSection() {
     return Container(
-      margin: EdgeInsets.only(top: 10, bottom: 20),
+      margin: const EdgeInsets.only(top: 10, bottom: 20),
       child: ListView.builder(
         shrinkWrap: true,
         itemCount: 5,
@@ -274,14 +271,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               Text(
                 _formatDate(campaign.endDate),
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
               ),
               Text(
                 _formatMonth(campaign.endDate),
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
                 ),

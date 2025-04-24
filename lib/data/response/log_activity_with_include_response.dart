@@ -7,20 +7,14 @@ class LogActivityWithIncludeResponse extends LogActivityModel {
   final CampaignModel campaign;
 
   LogActivityWithIncludeResponse({
-    required int logId,
-    required int userId,
-    required int campaignId,
-    required String activityType,
-    required String activityDescription,
+    required super.logId,
+    required super.userId,
+    required super.campaignId,
+    required super.activityType,
+    required super.activityDescription,
     required this.user,
     required this.campaign,
-  }) : super(
-    logId: logId,
-    userId: userId,
-    campaignId: campaignId,
-    activityType: activityType,
-    activityDescription: activityDescription,
-  );
+  });
 }
 
 List<LogActivityWithIncludeResponse> getLogActivityWithUserAndCampaign() {

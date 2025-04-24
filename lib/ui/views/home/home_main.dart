@@ -26,10 +26,10 @@ class _HomeMainState extends State<HomeMain> {
   void initState() {
     super.initState();
     _screenOptions = [
-      DashboardScreen(),
-      ScheduleScreen(),
-      ExploreScreen(),
-      ProfileScreen()
+      const DashboardScreen(),
+      const ScheduleScreen(),
+      const ExploreScreen(),
+      const ProfileScreen()
     ];
   }
 

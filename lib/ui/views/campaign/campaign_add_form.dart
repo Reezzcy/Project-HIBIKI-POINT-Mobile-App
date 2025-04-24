@@ -1,8 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:project_hibiki_point_mobile_app/res/colors.dart';
 
 class CampaignAddForm extends StatefulWidget {
+  const CampaignAddForm({super.key});
+
   @override
   _CampaignAddFormState createState() => _CampaignAddFormState();
 }
@@ -53,17 +54,17 @@ class _CampaignAddFormState extends State<CampaignAddForm> {
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SizedBox(height: 10),
-                  Text("Upload Files",
+                  const SizedBox(height: 10),
+                  const Text("Upload Files",
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 20),
-                  Icon(Icons.cloud_upload,
+                  const SizedBox(height: 20),
+                  const Icon(Icons.cloud_upload,
                       size: 60, color: AppColors.primaryDarkBlue),
-                  SizedBox(height: 16),
-                  Text("Upload Your Files From Your Phone",
+                  const SizedBox(height: 16),
+                  const Text("Upload Your Files From Your Phone",
                       textAlign: TextAlign.center),
-                  SizedBox(height: 24),
+                  const SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
@@ -71,10 +72,10 @@ class _CampaignAddFormState extends State<CampaignAddForm> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20)),
                       padding:
-                          EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                          const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                     ),
                     child:
-                        Text("Upload", style: TextStyle(color: Colors.white)),
+                        const Text("Upload", style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),
@@ -83,7 +84,7 @@ class _CampaignAddFormState extends State<CampaignAddForm> {
                 top: 0,
                 child: GestureDetector(
                   onTap: () => Navigator.pop(context),
-                  child: Icon(Icons.close, color: Colors.red),
+                  child: const Icon(Icons.close, color: Colors.red),
                 ),
               )
             ],
@@ -96,7 +97,7 @@ class _CampaignAddFormState extends State<CampaignAddForm> {
   PreferredSizeWidget _appBarSection(BuildContext context) {
     return AppBar(
       backgroundColor: AppColors.primaryDarkBlue,
-      title: Text(
+      title: const Text(
         'My Campaign',
         style: TextStyle(
           color: AppColors.primaryWhite,
@@ -106,7 +107,7 @@ class _CampaignAddFormState extends State<CampaignAddForm> {
       ),
       leading: IconButton(
         onPressed: () => Navigator.pop(context),
-        icon: Icon(Icons.arrow_back_ios, color: AppColors.primaryWhite),
+        icon: const Icon(Icons.arrow_back_ios, color: AppColors.primaryWhite),
       ),
     );
   }
@@ -129,26 +130,26 @@ class _CampaignAddFormState extends State<CampaignAddForm> {
             child: Column(
               children: [
                 _buildTextField("Title"),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildTextField("Budget"),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildTextField("Description", maxLines: 4),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
 
                 // Date Picker Row
                 Row(
                   children: [
-                    Icon(Icons.access_time, size: 20),
-                    SizedBox(width: 8),
+                    const Icon(Icons.access_time, size: 20),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: GestureDetector(
                         onTap: () => _selectDate(context, true),
                         child: _dateButton(_formatDate(_startDate)),
                       ),
                     ),
-                    SizedBox(width: 10),
-                    Text("→"),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
+                    const Text("→"),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: GestureDetector(
                         onTap: () => _selectDate(context, false),
@@ -158,22 +159,22 @@ class _CampaignAddFormState extends State<CampaignAddForm> {
                   ],
                 ),
 
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
 
                 OutlinedButton.icon(
                   onPressed: () {
                     _showUploadPopup(context);
                   },
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: AppColors.primaryDarkBlue),
+                    side: const BorderSide(color: AppColors.primaryDarkBlue),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
                   ),
-                  icon: Icon(Icons.attach_file),
-                  label: Text("Add Attachment"),
+                  icon: const Icon(Icons.attach_file),
+                  label: const Text("Add Attachment"),
                 ),
 
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
 
                 SizedBox(
                   width: double.infinity,
@@ -185,7 +186,7 @@ class _CampaignAddFormState extends State<CampaignAddForm> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14)),
                     ),
-                    child: Text("Create Campaign",
+                    child: const Text("Create Campaign",
                         style: TextStyle(fontSize: 16, color: Colors.white)),
                   ),
                 )
@@ -202,12 +203,12 @@ class _CampaignAddFormState extends State<CampaignAddForm> {
       maxLines: maxLines,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: AppColors.primaryDarkBlue),
+        labelStyle: const TextStyle(color: AppColors.primaryDarkBlue),
         filled: true,
         fillColor: AppColors.primaryWhite,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             color: AppColors.primaryDarkBlue,
           ),
         ),
@@ -219,13 +220,13 @@ class _CampaignAddFormState extends State<CampaignAddForm> {
 
   Widget _dateButton(String text) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       decoration: BoxDecoration(
           color: AppColors.primaryWhite,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: AppColors.primaryDarkBlue)),
       child: Text(text,
-          style: TextStyle(fontSize: 14, color: AppColors.primaryDarkBlue)),
+          style: const TextStyle(fontSize: 14, color: AppColors.primaryDarkBlue)),
     );
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:project_hibiki_point_mobile_app/res/colors.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class ProfileScreen extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: screenWidth * 0.12,
-                  backgroundImage: AssetImage('assets/images/hibiki_logo_splash.png'),
+                  backgroundImage: const AssetImage('assets/images/hibiki_logo_splash.png'),
                 ),
                 SizedBox(height: screenHeight * 0.015),
                 Text(
@@ -48,7 +48,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           Expanded(
             child: ListView(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
               children: [
                 buildMenuItem(title: 'Settings', icon: Icons.settings),
                 buildMenuItem(title: 'Notification', icon: Icons.notifications),
@@ -70,7 +70,7 @@ class ProfileScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.primaryWhite,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: AppColors.primaryCream,
               blurRadius: 4,
@@ -82,9 +82,9 @@ class ProfileScreen extends StatelessWidget {
           leading: Icon(icon, color: AppColors.primaryDarkBlue),
           title: Text(
             title,
-            style: TextStyle(fontWeight: FontWeight.w500),
+            style: const TextStyle(fontWeight: FontWeight.w500),
           ),
-          trailing: Icon(Icons.chevron_right),
+          trailing: const Icon(Icons.chevron_right),
           onTap: () {}, // Tambahkan aksi sesuai kebutuhan
         ),
       ),

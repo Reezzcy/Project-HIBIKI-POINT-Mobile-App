@@ -17,7 +17,7 @@ class HibikiPointApp extends StatelessWidget {
       title: 'HIBIKI POINT',
       theme: ThemeData(),
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: const SplashScreen(),
     );
   }
 }

@@ -9,9 +9,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Login Screen',
-      home: const LoginScreen(),
+      home: LoginScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -96,7 +96,7 @@ class LoginScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => HomeMain()),
+                      MaterialPageRoute(builder: (context) => const HomeMain()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -141,7 +141,7 @@ class LoginScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => RegisterScreen()),
+                              builder: (context) => const RegisterScreen()),
                         );
                       },
                       child: const Text(

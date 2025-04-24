@@ -5,27 +5,17 @@ class CampaignWithAttachmentResponse extends CampaignModel {
   final AttachmentModel attachment;
 
   CampaignWithAttachmentResponse({
-    required int campaignId,
-    required int userId,
-    required int attachmentId,
-    required String title,
-    required String description,
-    required String budget,
-    required String status,
-    required DateTime startDate,
-    required DateTime endDate,
+    required super.campaignId,
+    required super.userId,
+    required super.attachmentId,
+    required super.title,
+    required super.description,
+    required super.budget,
+    required super.status,
+    required super.startDate,
+    required super.endDate,
     required this.attachment,
-  }) : super(
-    campaignId: campaignId,
-    userId: userId,
-    attachmentId: attachmentId,
-    title: title,
-    description: description,
-    budget: budget,
-    status: status,
-    startDate: startDate,
-    endDate: endDate,
-  );
+  });
 }
 
 List<CampaignWithAttachmentResponse> dummyCampaignWithAttachmentList = [
