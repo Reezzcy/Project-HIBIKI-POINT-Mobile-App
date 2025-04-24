@@ -27,8 +27,8 @@ class _HomeMainState extends State<HomeMain> {
     super.initState();
     _screenOptions = [
       DashboardScreen(),
-      ExploreScreen(),
       ScheduleScreen(),
+      ExploreScreen(),
       ProfileScreen()
     ];
   }
@@ -53,8 +53,8 @@ class _HomeMainState extends State<HomeMain> {
           ],
           type: BottomNavigationBarType.fixed,
           currentIndex: _selectedIndex,
-          selectedItemColor: AppColors.primaryCream,
-          unselectedItemColor: AppColors.primaryCream,
+          selectedItemColor: AppColors.primaryBoneWhite,
+          unselectedItemColor: AppColors.primaryBoneWhite,
           onTap: _onItemTapped,
         ),
       ),
@@ -64,7 +64,7 @@ class _HomeMainState extends State<HomeMain> {
   Widget _selectedMenuIcon(int indexIcon, IconData menuIcon) {
     bool isSelected = indexIcon == _selectedIndex;
     return isSelected
-        ? Icon(menuIcon, size: 35, color: AppColors.primaryCream)
-        : Icon(menuIcon, color: AppColors.primaryCream);
+        ? Icon(menuIcon, size: 35, color: AppColors.primaryBoneWhite)
+        : Icon(menuIcon, color: AppColors.primaryBoneWhite);
   }
 }

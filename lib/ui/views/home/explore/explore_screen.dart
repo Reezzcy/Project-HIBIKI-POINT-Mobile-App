@@ -12,7 +12,7 @@ class ExploreScreen extends StatelessWidget {
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-
+              Text('Explore Screen')
             ],
           ),
         ),
