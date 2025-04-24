@@ -28,6 +28,7 @@ class LoginScreen extends StatelessWidget {
     final width = size.width;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(
