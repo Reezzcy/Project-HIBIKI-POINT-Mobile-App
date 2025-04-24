@@ -80,16 +80,14 @@ class _CampaignScreenState extends State<CampaignScreen> {
   }
 
   Widget _campaignListSection() {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: ListView.builder(
-          itemCount: _campaignWithAttachmentList.length,
-          itemBuilder: (context, index) {
-            CampaignWithAttachmentResponse campaign = _campaignWithAttachmentList[index];
-            return _campaignItem(campaign);
-          },
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: ListView.builder(
+        itemCount: _campaignWithAttachmentList.length,
+        itemBuilder: (context, index) {
+          CampaignWithAttachmentResponse campaign = _campaignWithAttachmentList[index];
+          return _campaignItem(campaign);
+        },
       ),
     );
   }
