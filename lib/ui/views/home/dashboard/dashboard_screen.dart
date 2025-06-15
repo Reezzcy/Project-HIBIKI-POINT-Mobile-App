@@ -148,6 +148,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+  Widget _sliderCampaign() {
+
+  }
+
   Widget _menuIcon(String menuName, Widget menuIcon) {
     return Card(
       color: AppColors.primaryGray,
