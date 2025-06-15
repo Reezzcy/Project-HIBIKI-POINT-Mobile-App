@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:project_hibiki_point_mobile_app/data/models/campaign_model.dart';
 import 'package:project_hibiki_point_mobile_app/data/models/user_model.dart';
+import 'package:project_hibiki_point_mobile_app/data/response/campaign_with_attachment_response.dart';
 import 'package:project_hibiki_point_mobile_app/data/response/log_activity_with_include_response.dart';
 import 'package:project_hibiki_point_mobile_app/res/colors.dart';
 import 'package:project_hibiki_point_mobile_app/ui/views/campaign/campaign_detail_screen.dart';
@@ -20,6 +21,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   UserModel user = dummyUser;
+  final CampaignWithAttachmentResponse _campaignSlider = dummyCampaignWithAttachmentList.first;
   final List<LogActivityWithIncludeResponse> _logActivityWithIncludeList = dummyLogWithIncludeList;
   final List<CampaignModel> _campaignList = dummyCampaignList;
 
@@ -122,9 +124,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Container(
               width: screenSize.width * 0.40,
               decoration: BoxDecoration(
-                color: AppColors.primaryGray,
+                color: AppColors.primaryWhite,
                 borderRadius: BorderRadius.circular(16),
               ),
+              child: _sliderCampaign(_campaignSlider),
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -148,8 +151,44 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _sliderCampaign() {
-
+  Widget _sliderCampaign(CampaignWithAttachmentResponse campaign) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return CampaignDetailScreen(campaign: campaign);
+        }));
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Expanded(
+            flex: 3,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.memory(
+                base64Decode(campaign.attachment.file),
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            flex: 1,
+            child: Text(
+              campaign.title,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primaryDarkBlue,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _menuIcon(String menuName, Widget menuIcon) {
