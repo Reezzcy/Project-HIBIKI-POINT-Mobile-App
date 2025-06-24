@@ -1,31 +1,104 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'register_screen.dart';
 import 'package:project_hibiki_point_mobile_app/ui/views/home/home_main.dart';
+import 'package:project_hibiki_point_mobile_app/providers/auth_provider.dart';
 
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Login Screen',
-      home: LoginScreen(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkLoginStatus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    await authProvider.checkLoginStatus();
+    if (authProvider.isAuthenticated) {
+      _navigateToHome();
+    }
+  }
+
+  void _navigateToHome() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const HomeMain()),
+    );
+  }
+
+  // Add this code in your _handleEmailPasswordLogin and _handleGoogleLogin methods
+
+  Future<void> _handleEmailPasswordLogin() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter email and password')),
+      );
+      return;
+    }
+
+    print("Attempting login with email: ${_emailController.text}");
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final success = await authProvider.login(
+      _emailController.text.trim(),
+      _passwordController.text,
+    );
+
+    print("Login success: $success, Error: ${authProvider.error}");
+
+    if (success) {
+      _navigateToHome();
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(authProvider.error ?? 'Login failed')),
+      );
+    }
+  }
+
+  Future<void> _handleGoogleLogin() async {
+    print("Starting Google login process");
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final success = await authProvider.loginWithGoogle();
+
+    print("Google login success: $success, Error: ${authProvider.error}");
+
+    if (success) {
+      _navigateToHome();
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(authProvider.error ?? 'Google login failed')),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Ambil ukuran layar
     final size = MediaQuery.of(context).size;
     final height = size.height;
     final width = size.width;
+    final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -62,6 +135,7 @@ class LoginScreen extends StatelessWidget {
               const Text('Email'),
               const SizedBox(height: 8),
               TextField(
+                controller: _emailController,
                 decoration: InputDecoration(
                   hintText: 'Enter your email',
                   border: OutlineInputBorder(
@@ -73,6 +147,7 @@ class LoginScreen extends StatelessWidget {
               const Text('Password'),
               const SizedBox(height: 8),
               TextField(
+                controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                   hintText: 'Enter your password',
@@ -93,12 +168,7 @@ class LoginScreen extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const HomeMain()),
-                    );
-                  },
+                  onPressed: authProvider.isLoading ? null : _handleEmailPasswordLogin,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF374151),
                     shape: RoundedRectangleBorder(
@@ -106,7 +176,9 @@ class LoginScreen extends StatelessWidget {
                     ),
                     padding: EdgeInsets.symmetric(vertical: height * 0.02),
                   ),
-                  child: Text('Login',
+                  child: authProvider.isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text('Login',
                       style: TextStyle(
                           fontSize: width * 0.045, color: Colors.white)),
                 ),
@@ -116,9 +188,7 @@ class LoginScreen extends StatelessWidget {
               SizedBox(height: height * 0.025),
               Center(
                 child: GestureDetector(
-                  onTap: () {
-                    // TODO: handle login with Google
-                  },
+                  onTap: authProvider.isLoading ? null : _handleGoogleLogin,
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(

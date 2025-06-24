@@ -1,4 +1,3 @@
-
 class AttachmentModel {
   final int attachmentId;
   final String file;

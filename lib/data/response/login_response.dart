@@ -1,0 +1,25 @@
+import 'package:project_hibiki_point_mobile_app/data/models/auth_model.dart';
+
+class LoginResponse extends AuthModel {
+  final String generateToken;
+
+  LoginResponse({
+    required super.authId,
+    required super.email,
+    required super.userId,
+    required this.generateToken
+  });
+
+  factory LoginResponse.postAuthLogin(Map<String, dynamic> object) {
+    // Debugging
+    print('Login response data: $object');
+
+    // Konversi semua field ke string untuk menghindari type error
+    return LoginResponse(
+        authId: object['id']?.toString() ?? '0',
+        email: object['email'] ?? '',
+        userId: object['user_id']?.toString() ?? '', // Konversi ke string
+        generateToken: object['token'] ?? object['generateToken'] ?? '' // Coba kedua nama field
+    );
+  }
+}
