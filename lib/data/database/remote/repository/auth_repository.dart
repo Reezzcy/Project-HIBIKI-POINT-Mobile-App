@@ -38,6 +38,8 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<LoginGoogleResponse> loginWithGoogle() async {
     try {
+      await _googleSignIn.signOut();
+
       // First, check if already signed in
       GoogleSignInAccount? currentUser = _googleSignIn.currentUser;
       if (currentUser == null) {

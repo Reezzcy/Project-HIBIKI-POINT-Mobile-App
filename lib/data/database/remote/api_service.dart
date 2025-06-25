@@ -52,7 +52,8 @@ class ApiService {
         body: data is String ? data : json.encode(data),
         headers: headers ?? {'Content-Type': 'application/json'},
       );
-      
+
+      print(1);
       client.close();
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
@@ -67,7 +68,7 @@ class ApiService {
   // Process response and handle errors, wrapping in ResponseModel
   ResponseModel _processResponse(http.Response response) {
     final responseBody = json.decode(response.body);
-
+    print(responseBody);
     // If the API directly returns ResponseModel structure
     if (responseBody is Map<String, dynamic> &&
         responseBody.containsKey('status') &&
