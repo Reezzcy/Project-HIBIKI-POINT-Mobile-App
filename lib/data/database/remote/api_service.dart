@@ -6,6 +6,7 @@ import 'package:project_hibiki_point_mobile_app/data/response/login_google_respo
 import 'package:project_hibiki_point_mobile_app/data/response/login_response.dart';
 import 'package:project_hibiki_point_mobile_app/data/response/register_reponse.dart';
 import 'package:project_hibiki_point_mobile_app/data/response/response_model.dart';
+import 'package:project_hibiki_point_mobile_app/data/response/campaign_response.dart';
 
 class ApiService {
   // Singleton pattern
@@ -14,7 +15,7 @@ class ApiService {
   ApiService._internal();
 
   // Use 10.0.2.2 for Android emulator to access localhost
-  final String _baseUrl = 'https://10.0.2.2';
+  final String _baseUrl = 'https://10.0.2.2:443';
 
   http.Client _createClient() {
     // For development: accept any certificate
@@ -118,5 +119,27 @@ class ApiService {
     final responseModel = await post('/api/auth/register', data);
     // Extract the data payload from ResponseModel and pass it to the RegisterResponse constructor
     return RegisterResponse.postAuthRegister(responseModel.data);
+  }
+
+  Future<CampaignResponse> createCampaign(
+      Map<String, dynamic> campaignData, {
+        String? token, // Opsional jika endpoint memerlukan otentikasi
+      }) async {
+    // Menyiapkan header, tambahkan token jika ada
+    final headers = {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+
+    // Panggil metode post generik Anda
+    final responseModel = await post('/api/campaign/', campaignData, headers: headers);
+
+    // Ekstrak payload 'data' dari ResponseModel dan teruskan ke konstruktor CampaignResponse
+    // Pastikan responseModel.data tidak null dan merupakan Map
+    if (responseModel.data is Map<String, dynamic>) {
+      return CampaignResponse.fromData(responseModel.data);
+    } else {
+      throw Exception('Invalid data format received from server');
+    }
   }
 }

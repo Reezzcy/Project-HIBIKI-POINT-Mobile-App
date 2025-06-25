@@ -56,7 +56,7 @@ class _CampaignScreenState extends State<CampaignScreen> {
         onPressed: () {
           Navigator.push(context,
             MaterialPageRoute(builder: (context) {
-              return const CampaignAddForm();
+              return CampaignAddForm();
             })
           );
         },

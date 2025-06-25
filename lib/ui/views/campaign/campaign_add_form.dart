@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:project_hibiki_point_mobile_app/res/colors.dart';
+import '../../../data/database/remote/api_service.dart';
+import 'package:project_hibiki_point_mobile_app/providers/auth_provider.dart';
 
 class CampaignAddForm extends StatefulWidget {
   const CampaignAddForm({super.key});
@@ -10,17 +13,108 @@ class CampaignAddForm extends StatefulWidget {
 
 class _CampaignAddFormState extends State<CampaignAddForm> {
   final _formKey = GlobalKey<FormState>();
+
+  // 1. Tambahkan TextEditingController untuk setiap field
+  final _titleController = TextEditingController();
+  final _budgetController = TextEditingController();
+  final _descriptionController = TextEditingController();
+
   DateTime? _startDate;
   DateTime? _endDate;
 
+  // 2. Tambahkan state untuk loading
+  bool _isLoading = false;
+
+  // 3. Buat fungsi untuk menangani submit
+  Future<void> _handleCreateCampaign() async {
+    // Validasi form terlebih dahulu
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    // Validasi tanggal
+    if (_startDate == null || _endDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select both start and end dates.')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // 1. DAPATKAN TOKEN DARI AUTH_PROVIDER, BUKAN DARI SharedPreferences LANGSUNG
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final String? token = authProvider.token;
+
+      // 2. PERIKSA APAKAH TOKEN ADA DI PROVIDER
+      if (token == null || token.isEmpty) {
+        throw Exception("Authentication token not found in provider. Please login again.");
+      }
+
+      // Siapkan data untuk dikirim ke API
+      final campaignData = {
+        // "user_id": 1, // Ganti dengan user_id yang relevan (jika perlu dikirim dari client)
+        "title": _titleController.text,
+        "description": _descriptionController.text,
+        "budget": _budgetController.text,
+        "status": "Draft",
+        // Format tanggal ke string "YYYY-MM-DD"
+        "start_date": _startDate!.toIso8601String().split('T').first,
+        "end_date": _endDate!.toIso8601String().split('T').first,
+      };
+
+      // Panggil ApiService
+      final apiService = ApiService();
+      final response = await apiService.createCampaign(
+        campaignData,
+        token: token
+      );
+
+      // Tampilkan pesan sukses dan kembali ke halaman sebelumnya
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Campaign "${response.campaign.title}" created successfully!')),
+      );
+      Navigator.pop(context, true); // Kirim 'true' untuk menandakan sukses
+
+    } catch (e) {
+      // Tangani error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to create campaign: $e')),
+      );
+    } finally {
+      // Pastikan state loading dihentikan
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    // Jangan lupa dispose controller
+    _titleController.dispose();
+    _budgetController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  // --- Kode UI Anda yang lain (tidak berubah) ---
   Future<void> _selectDate(BuildContext context, bool isStart) async {
     final picked = await showDatePicker(
       context: context,
       initialDate: isStart
           ? (_startDate ?? DateTime.now())
-          : (_endDate ?? DateTime.now()),
+          : (_endDate ?? _startDate ?? DateTime.now()),
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
+      // Validasi tambahan agar end date tidak sebelum start date
+      selectableDayPredicate: isStart ? null : (DateTime day) {
+        return _startDate == null ? true : !day.isBefore(_startDate!);
+      },
     );
 
     if (picked != null) {
@@ -57,7 +151,7 @@ class _CampaignAddFormState extends State<CampaignAddForm> {
                   const SizedBox(height: 10),
                   const Text("Upload Files",
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 20),
                   const Icon(Icons.cloud_upload,
                       size: 60, color: AppColors.primaryDarkBlue),
@@ -72,10 +166,10 @@ class _CampaignAddFormState extends State<CampaignAddForm> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20)),
                       padding:
-                          const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                     ),
                     child:
-                        const Text("Upload", style: TextStyle(color: Colors.white)),
+                    const Text("Upload", style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),
@@ -129,11 +223,12 @@ class _CampaignAddFormState extends State<CampaignAddForm> {
             key: _formKey,
             child: Column(
               children: [
-                _buildTextField("Title"),
+                // 4. Hubungkan controller ke TextFormField
+                _buildTextField("Title", controller: _titleController),
                 const SizedBox(height: 20),
-                _buildTextField("Budget"),
+                _buildTextField("Budget", controller: _budgetController, keyboardType: TextInputType.number),
                 const SizedBox(height: 20),
-                _buildTextField("Description", maxLines: 4),
+                _buildTextField("Description", maxLines: 4, controller: _descriptionController),
                 const SizedBox(height: 24),
 
                 // Date Picker Row
@@ -180,13 +275,19 @@ class _CampaignAddFormState extends State<CampaignAddForm> {
                   width: double.infinity,
                   height: height * 0.065,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    // 5. Hubungkan fungsi _handleCreateCampaign ke tombol
+                    onPressed: _isLoading ? null : _handleCreateCampaign, // Nonaktifkan tombol saat loading
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryDarkBlue,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14)),
                     ),
-                    child: const Text("Create Campaign",
+                    // Tampilkan loading indicator atau text
+                    child: _isLoading
+                        ? const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    )
+                        : const Text("Create Campaign",
                         style: TextStyle(fontSize: 16, color: Colors.white)),
                   ),
                 )
@@ -198,9 +299,12 @@ class _CampaignAddFormState extends State<CampaignAddForm> {
     );
   }
 
-  Widget _buildTextField(String label, {int maxLines = 1}) {
+  // Modifikasi _buildTextField untuk menerima controller
+  Widget _buildTextField(String label, {int maxLines = 1, TextEditingController? controller, TextInputType? keyboardType}) {
     return TextFormField(
+      controller: controller,
       maxLines: maxLines,
+      keyboardType: keyboardType,
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(color: AppColors.primaryDarkBlue),
@@ -212,9 +316,17 @@ class _CampaignAddFormState extends State<CampaignAddForm> {
             color: AppColors.primaryDarkBlue,
           ),
         ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.primaryDarkBlue, width: 1.0),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.primaryDarkBlue, width: 2.0),
+        ),
       ),
       validator: (value) =>
-          value == null || value.isEmpty ? 'Please enter $label' : null,
+      value == null || value.isEmpty ? 'Please enter $label' : null,
     );
   }
 
@@ -225,8 +337,10 @@ class _CampaignAddFormState extends State<CampaignAddForm> {
           color: AppColors.primaryWhite,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: AppColors.primaryDarkBlue)),
-      child: Text(text,
-          style: const TextStyle(fontSize: 14, color: AppColors.primaryDarkBlue)),
+      child: Center(
+        child: Text(text,
+            style: const TextStyle(fontSize: 14, color: AppColors.primaryDarkBlue)),
+      ),
     );
   }
 }
