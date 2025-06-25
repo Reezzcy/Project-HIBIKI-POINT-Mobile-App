@@ -10,10 +10,6 @@ class LoginGoogleResponse {
   });
 
   factory LoginGoogleResponse.postAuthLoginGoogle(Map<String, dynamic> object) {
-    // Tampilkan seluruh object untuk debugging
-    print('Response Google login full: $object');
-
-    // Parse data dengan cara yang lebih aman
     return LoginGoogleResponse(
       token: object['token'] ?? '',
       user: _parseUser(object['user']),

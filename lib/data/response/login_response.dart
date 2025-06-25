@@ -11,9 +11,6 @@ class LoginResponse extends AuthModel {
   });
 
   factory LoginResponse.postAuthLogin(Map<String, dynamic> object) {
-    // Debugging
-    print('Login response data: $object');
-
     // Konversi semua field ke string untuk menghindari type error
     return LoginResponse(
         authId: object['id']?.toString() ?? '0',
