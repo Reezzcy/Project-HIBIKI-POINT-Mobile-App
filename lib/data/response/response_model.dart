@@ -16,7 +16,4 @@ class ResponseModel<T> {
       data: json['data'],
     );
   }
-
-  bool get isSuccess => status.toLowerCase() == 'success';
-  bool get isError => !isSuccess;
 }

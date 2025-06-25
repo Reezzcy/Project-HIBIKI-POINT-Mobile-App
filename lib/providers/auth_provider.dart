@@ -134,4 +134,26 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<bool> register(String name, String email, String password) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      print("Attempting registration for: $name, $email");
+      final registerResponse = await _authRepository.registerUser(name, email, password);
+
+      print("Registration successful: ${registerResponse.user.name}");
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      print("Registration error: $e");
+      _isLoading = false;
+      _error = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
 }
