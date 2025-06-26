@@ -1,52 +1,44 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:project_hibiki_point_mobile_app/data/models/campaign_model.dart';
-import 'package:project_hibiki_point_mobile_app/data/response/campaign_with_attachment_response.dart';
 import 'package:project_hibiki_point_mobile_app/res/colors.dart';
+import 'package:project_hibiki_point_mobile_app/ui/views/campaign/campaign_edit_form.dart';
 
-class CampaignDetailScreen extends StatefulWidget {
+class CampaignDetailScreen extends StatelessWidget {
   final CampaignModel campaign;
 
   const CampaignDetailScreen({super.key, required this.campaign});
 
   @override
-  State<CampaignDetailScreen> createState() => _CampaignDetailScreenState();
-}
-
-class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
-  @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-    CampaignWithAttachmentResponse campaignWithAttachment;
-    if (widget.campaign is CampaignWithAttachmentResponse) {
-      campaignWithAttachment = widget.campaign as CampaignWithAttachmentResponse;
-    } else {
-      campaignWithAttachment = dummyCampaignWithAttachmentList
-          .firstWhere((campaign) => campaign.campaignId == widget.campaign.campaignId);
-    }
 
     return Scaffold(
-      appBar: _appBarSection(campaignWithAttachment),
+      appBar: _appBarSection(context),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: SingleChildScrollView(
           child: Column(
             children: [
-              _campaignPicture(campaignWithAttachment, screenSize),
+              _campaignPicture(screenSize), // Gambar placeholder
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _descriptionTitle(),
-                    _descriptionSection(campaignWithAttachment),
-                    _budgetTitle(),
-                    _budgetSection(campaignWithAttachment),
-                    _statusTitle(),
-                    _statusSection(campaignWithAttachment),
-                    _dateTitle(),
-                    _dateSection(campaignWithAttachment)
+                    _buildSectionTitle('Description'),
+                    _buildSectionContent(campaign.description),
+
+                    _buildSectionTitle('Budget'),
+                    _buildSectionContent('Rp. ${campaign.budget}'),
+
+                    _buildSectionTitle('Status'),
+                    _buildSectionContent(campaign.status),
+
+                    _buildSectionTitle('Date'),
+                    _buildSectionContent(
+                        '${_formatDate(campaign.startDate)} - ${_formatDate(campaign.endDate)}'
+                    ),
                   ],
                 ),
               ),
@@ -58,22 +50,22 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
     );
   }
 
-  PreferredSizeWidget _appBarSection(CampaignWithAttachmentResponse campaignWithAttachment) {
+  PreferredSizeWidget _appBarSection(BuildContext context) {
     return AppBar(
-      title: Text(
-        campaignWithAttachment.title,
-        style: const TextStyle(
-            color: AppColors.primaryBlack,
-            fontSize: 24.0,
-            fontWeight: FontWeight.bold
+        title: Text(
+          campaign.title,
+          style: const TextStyle(
+              color: AppColors.primaryBlack,
+              fontSize: 24.0,
+              fontWeight: FontWeight.bold
+          ),
         ),
-      ),
-      leading: IconButton(
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        icon: const Icon(Icons.arrow_back_ios, color: AppColors.primaryBlack)
-      )
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(Icons.arrow_back_ios, color: AppColors.primaryBlack)
+        )
     );
   }
 
@@ -83,6 +75,11 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
       height: 50,
       child: FloatingActionButton(
         onPressed: () {
+          // --- FUNGSI EDIT DI SINI ---
+          // Arahkan ke halaman form edit, kirim data campaign saat ini
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return CampaignEditForm(campaignToEdit: campaign);
+          }));
         },
         backgroundColor: AppColors.primaryDarkBlue,
         child: const Row(
@@ -102,166 +99,59 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
       ),
     );
   }
-  
-  Widget _campaignPicture(CampaignWithAttachmentResponse campaign, Size screenSize) {
+
+  Widget _campaignPicture(Size screenSize) {
+    // Gambar placeholder karena tidak ada attachment
     return Center(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Image.memory(
-          width: screenSize.width * 0.9,
-          height: screenSize.height * 0.3,
-          fit: BoxFit.cover,
-          base64Decode(campaign.attachment.file),
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 20),
+        width: screenSize.width * 0.9,
+        height: screenSize.height * 0.25,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Icon(
+          Icons.campaign_outlined,
+          size: 100,
+          color: Colors.grey.shade400,
         ),
       ),
     );
   }
 
-  Widget _descriptionTitle() {
-    return Container(
-      margin: const EdgeInsets.only(top: 20, bottom: 10),
+  // Widget helper untuk membuat judul section
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20, bottom: 10),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            alignment: Alignment.centerLeft,
-            child: const Text(
-              'Description',
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20
-              ),
-            ),
+          Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
           ),
-          const Divider()
+          const Divider(),
         ],
       ),
     );
   }
 
-  Widget _descriptionSection(CampaignWithAttachmentResponse campaign) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      alignment: Alignment.centerLeft,
+  // Widget helper untuk membuat konten section
+  Widget _buildSectionContent(String content) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
       child: Text(
-        campaign.description,
-        textAlign: TextAlign.left,
-        style: const TextStyle(
-          fontSize: 14
-        ),
-      ),
-    );
-  }
-
-  Widget _budgetTitle() {
-    return Container(
-      margin: const EdgeInsets.only(top: 20, bottom: 10),
-      child: Column(
-        children: [
-          Container(
-            alignment: Alignment.centerLeft,
-            child: const Text(
-              'Budget',
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20
-              ),
-            ),
-          ),
-          const Divider()
-        ],
-      ),
-    );
-  }
-
-  Widget _budgetSection(CampaignWithAttachmentResponse campaign) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      alignment: Alignment.centerLeft,
-      child: Text(
-        'Rp. ${campaign.budget}',
-        textAlign: TextAlign.left,
-        style: const TextStyle(
-            fontSize: 16
-        ),
-      ),
-    );
-  }
-
-  Widget _statusTitle() {
-    return Container(
-      margin: const EdgeInsets.only(top: 20, bottom: 10),
-      child: Column(
-        children: [
-          Container(
-            alignment: Alignment.centerLeft,
-            child: const Text(
-              'Status',
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20
-              ),
-            ),
-          ),
-          const Divider()
-        ],
-      ),
-    );
-  }
-
-  Widget _statusSection(CampaignWithAttachmentResponse campaign) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      alignment: Alignment.centerLeft,
-      child: Text(
-        campaign.status,
-        textAlign: TextAlign.left,
-        style: const TextStyle(
-            fontSize: 16
-        ),
-      ),
-    );
-  }
-
-  Widget _dateTitle() {
-    return Container(
-      margin: const EdgeInsets.only(top: 20, bottom: 10),
-      child: Column(
-        children: [
-          Container(
-            alignment: Alignment.centerLeft,
-            child: const Text(
-              'Date',
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20
-              ),
-            ),
-          ),
-          const Divider()
-        ],
-      ),
-    );
-  }
-
-  Widget _dateSection(CampaignWithAttachmentResponse campaign) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      alignment: Alignment.centerLeft,
-      child: Text(
-        '${_formatDate(campaign.startDate)} - ${_formatDate(campaign.endDate)}',
-        textAlign: TextAlign.left,
-        style: const TextStyle(
-            fontSize: 16
-        ),
+        content,
+        style: const TextStyle(fontSize: 16),
       ),
     );
   }
 
   String _formatDate(DateTime dateTime) {
+    // Pastikan locale 'id_ID' sudah terdaftar di main.dart
+    // import 'package:intl/date_symbol_data_local.dart';
+    // await initializeDateFormatting('id_ID', null);
     return DateFormat('d MMMM yyyy', 'id_ID').format(dateTime);
   }
 }
