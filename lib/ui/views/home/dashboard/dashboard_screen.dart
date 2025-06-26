@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:project_hibiki_point_mobile_app/providers/campaign_provider.dart';
 import 'package:project_hibiki_point_mobile_app/data/models/user_model.dart';
+import 'package:provider/provider.dart';
+import 'package:project_hibiki_point_mobile_app/providers/auth_provider.dart';
+import 'package:project_hibiki_point_mobile_app/providers/campaign_provider.dart';
 import 'package:project_hibiki_point_mobile_app/data/response/campaign_response.dart';
 import 'package:project_hibiki_point_mobile_app/data/response/log_activity_with_include_response.dart';
 import 'package:project_hibiki_point_mobile_app/res/colors.dart';
@@ -21,14 +22,14 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  UserModel user = dummyUser;
+  final UserModel user = dummyUserList[0];
   final List<LogActivityWithIncludeResponse> _logActivityWithIncludeList = dummyLogWithIncludeList;
 
   @override
   void initState() {
     super.initState();
     // Fetch campaigns when dashboard initializes
-    Future.microtask(() => 
+    Future.microtask(() =>
       Provider.of<CampaignProvider>(context, listen: false).fetchCampaigns()
     );
   }
@@ -44,7 +45,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
     Size screenSize = MediaQuery.of(context).size;
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: AppColors.primaryWhite,
@@ -56,7 +59,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: <Widget>[
-                  _profileSection(screenSize),
+                  _profileSection(screenSize, authProvider),
                   _menuSection(screenSize),
                   _activityTitleSection(),
                   _activitySection(),
@@ -71,7 +74,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _profileSection(Size screenSize) {
+  Widget _profileSection(Size screenSize, authProvider) {
     return SizedBox(
       width: screenSize.width * 0.9,
       child: Row(
@@ -95,7 +98,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                     Text(
-                      user.name,
+                      authProvider.email ?? 'Username',
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold
@@ -179,7 +182,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return InkWell(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return CampaignDetailScreen(campaign: campaign);
+          return CampaignDetailScreen(campaign: campaign, attachmentFile: campaign.attachment.file);
         }));
       },
       child: Column(
@@ -344,7 +347,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return InkWell(
       onTap: (){
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return CampaignDetailScreen(campaign: campaign);
+          return CampaignDetailScreen(campaign: campaign, attachmentFile: campaign.attachment.file);
         }));
       },
       child: Container(

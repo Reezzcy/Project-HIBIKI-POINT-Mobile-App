@@ -1,14 +1,23 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:project_hibiki_point_mobile_app/data/models/campaign_model.dart';
+import 'package:project_hibiki_point_mobile_app/data/response/campaign_response.dart';
 import 'package:project_hibiki_point_mobile_app/res/colors.dart';
 import 'package:project_hibiki_point_mobile_app/ui/views/campaign/campaign_edit_form.dart';
 
-class CampaignDetailScreen extends StatelessWidget {
+class CampaignDetailScreen extends StatefulWidget {
   final CampaignModel campaign;
+  final String attachmentFile;
 
-  const CampaignDetailScreen({super.key, required this.campaign});
+  const CampaignDetailScreen({super.key, required this.campaign, this.attachmentFile = ''});
 
+  @override
+  State<CampaignDetailScreen> createState() => _CampaignDetailScreenState();
+}
+
+class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
@@ -20,24 +29,24 @@ class CampaignDetailScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              _campaignPicture(screenSize), // Gambar placeholder
+              _campaignPicture(screenSize, widget.attachmentFile), // Gambar placeholder
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildSectionTitle('Description'),
-                    _buildSectionContent(campaign.description),
+                    _buildSectionContent(widget.campaign.description),
 
                     _buildSectionTitle('Budget'),
-                    _buildSectionContent('Rp. ${campaign.budget}'),
+                    _buildSectionContent('Rp. ${widget.campaign.budget}'),
 
                     _buildSectionTitle('Status'),
-                    _buildSectionContent(campaign.status),
+                    _buildSectionContent(widget.campaign.status),
 
                     _buildSectionTitle('Date'),
                     _buildSectionContent(
-                        '${_formatDate(campaign.startDate)} - ${_formatDate(campaign.endDate)}'
+                        '${_formatDate(widget.campaign.startDate)} - ${_formatDate(widget.campaign.endDate)}'
                     ),
                   ],
                 ),
@@ -53,7 +62,7 @@ class CampaignDetailScreen extends StatelessWidget {
   PreferredSizeWidget _appBarSection(BuildContext context) {
     return AppBar(
         title: Text(
-          campaign.title,
+          widget.campaign.title,
           style: const TextStyle(
               color: AppColors.primaryBlack,
               fontSize: 24.0,
@@ -78,7 +87,7 @@ class CampaignDetailScreen extends StatelessWidget {
           // --- FUNGSI EDIT DI SINI ---
           // Arahkan ke halaman form edit, kirim data campaign saat ini
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return CampaignEditForm(campaignToEdit: campaign);
+            return CampaignEditForm(campaignToEdit: widget.campaign);
           }));
         },
         backgroundColor: AppColors.primaryDarkBlue,
@@ -100,24 +109,38 @@ class CampaignDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _campaignPicture(Size screenSize) {
+  Widget _campaignPicture(Size screenSize, String attachment) {
     // Gambar placeholder karena tidak ada attachment
-    return Center(
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 20),
-        width: screenSize.width * 0.9,
-        height: screenSize.height * 0.25,
-        decoration: BoxDecoration(
-          color: Colors.grey.shade200,
+    if (attachment != '') {
+      return Center(
+        child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
+          child: Image.memory(
+          width: screenSize.width * 0.9,
+          height: screenSize.height * 0.3,
+          fit: BoxFit.cover,
+            base64Decode(attachment),
+          ),
         ),
-        child: Icon(
-          Icons.campaign_outlined,
-          size: 100,
-          color: Colors.grey.shade400,
+      );
+    } else {
+      return Center(
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 20),
+          width: screenSize.width * 0.9,
+          height: screenSize.height * 0.25,
+          decoration: BoxDecoration(
+            color: Colors.grey.shade200,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Icon(
+            Icons.campaign_outlined,
+            size: 100,
+            color: Colors.grey.shade400,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   // Widget helper untuk membuat judul section
