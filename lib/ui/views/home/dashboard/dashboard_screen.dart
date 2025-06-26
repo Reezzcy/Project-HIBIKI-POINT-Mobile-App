@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:project_hibiki_point_mobile_app/data/models/campaign_model.dart';
+import 'package:provider/provider.dart';
+import 'package:project_hibiki_point_mobile_app/providers/campaign_provider.dart';
 import 'package:project_hibiki_point_mobile_app/data/models/user_model.dart';
-import 'package:project_hibiki_point_mobile_app/data/response/campaign_with_attachment_response.dart';
+import 'package:project_hibiki_point_mobile_app/data/response/campaign_response.dart';
 import 'package:project_hibiki_point_mobile_app/data/response/log_activity_with_include_response.dart';
 import 'package:project_hibiki_point_mobile_app/res/colors.dart';
 import 'package:project_hibiki_point_mobile_app/ui/views/campaign/campaign_detail_screen.dart';
@@ -21,9 +22,16 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   UserModel user = dummyUser;
-  final CampaignWithAttachmentResponse _campaignSlider = dummyCampaignWithAttachmentList.first;
   final List<LogActivityWithIncludeResponse> _logActivityWithIncludeList = dummyLogWithIncludeList;
-  final List<CampaignModel> _campaignList = dummyCampaignList;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch campaigns when dashboard initializes
+    Future.microtask(() => 
+      Provider.of<CampaignProvider>(context, listen: false).fetchCampaigns()
+    );
+  }
 
   final _mapMenu = {
     'Campaign': const CampaignScreen(),
@@ -40,18 +48,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: AppColors.primaryWhite,
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: <Widget>[
-                _profileSection(screenSize),
-                _menuSection(screenSize),
-                _activityTitleSection(),
-                _activitySection(),
-                _upcomingTitleSection(),
-                _upcomingEventSection()
-              ],
+        body: RefreshIndicator(
+          onRefresh: () => Provider.of<CampaignProvider>(context, listen: false).fetchCampaigns(),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: <Widget>[
+                  _profileSection(screenSize),
+                  _menuSection(screenSize),
+                  _activityTitleSection(),
+                  _activitySection(),
+                  _upcomingTitleSection(),
+                  _upcomingEventSection()
+                ],
+              ),
             ),
           ),
         ),
@@ -127,7 +139,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 color: AppColors.primaryWhite,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: _sliderCampaign(_campaignSlider),
+              child: Consumer<CampaignProvider>(builder: (context, provider, _) {
+                  if (provider.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (provider.error != null || provider.campaigns.isEmpty) {
+                    return const Center(child: Text('No campaigns'));
+                  }
+
+                  // Just use the first campaign directly
+                  return _sliderCampaign(provider.campaigns.first);
+                }
+              )
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -151,7 +175,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _sliderCampaign(CampaignWithAttachmentResponse campaign) {
+  Widget _sliderCampaign(CampaignResponse campaign) {
     return InkWell(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -276,20 +300,47 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _upcomingEventSection() {
-    return Container(
-      margin: const EdgeInsets.only(top: 10, bottom: 20),
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: 5,
-        itemBuilder: (context, index) {
-          CampaignModel campaign = _campaignList[index];
-          return _upcomingItem(campaign);
+    return Consumer<CampaignProvider>(
+      builder: (context, provider, _) {
+        if (provider.isLoading) {
+          return const Center(child: CircularProgressIndicator());
         }
-      ),
+        
+        if (provider.error != null) {
+          return Center(child: Text('Error: ${provider.error}'));
+        }
+        
+        if (provider.campaigns.isEmpty) {
+          return const Center(child: Text('No upcoming events'));
+        }
+        
+        // Sort campaigns by end date to find upcoming ones
+        final upcomingCampaigns = provider.campaigns
+          .where((c) => c.endDate.isAfter(DateTime.now()))
+          .take(5)
+          .toList();
+          
+        if (upcomingCampaigns.isEmpty) {
+          return const Center(child: Text('No upcoming events'));
+        }
+          
+        return Container(
+          margin: const EdgeInsets.only(top: 10, bottom: 20),
+          child: ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: upcomingCampaigns.length,
+            itemBuilder: (context, index) {
+              final campaign = upcomingCampaigns[index];
+              return _upcomingItem(campaign);
+            }
+          ),
+        );
+      },
     );
   }
 
-  Widget _upcomingItem(CampaignModel campaign) {
+  Widget _upcomingItem(CampaignResponse campaign) {
     return InkWell(
       onTap: (){
         Navigator.push(context, MaterialPageRoute(builder: (context) {

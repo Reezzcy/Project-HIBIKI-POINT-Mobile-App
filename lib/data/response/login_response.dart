@@ -13,9 +13,9 @@ class LoginResponse extends AuthModel {
   factory LoginResponse.postAuthLogin(Map<String, dynamic> object) {
     // Konversi semua field ke string untuk menghindari type error
     return LoginResponse(
-        authId: object['id']?.toString() ?? '0',
+        authId: object['id'] ?? 0,
         email: object['email'] ?? '',
-        userId: object['user_id']?.toString() ?? '', // Konversi ke string
+        userId: object['user_id'] ?? 0, // Konversi ke string
         generateToken: object['token'] ?? object['generateToken'] ?? '' // Coba kedua nama field
     );
   }

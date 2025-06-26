@@ -1,60 +1,34 @@
-import 'dart:convert';
+import 'package:project_hibiki_point_mobile_app/data/models/attachment_model.dart';
+import 'package:project_hibiki_point_mobile_app/data/models/campaign_model.dart';
 
-// Model untuk objek 'data' di dalam respons campaign
-// Ini bisa juga diletakkan di /data/models/campaign_model.dart jika Anda ingin memisahkannya
-class CampaignModel {
-  final int campaignId;
-  final int userId;
-  final String title;
-  final String description;
-  final String budget;
-  final String status;
-  final DateTime startDate;
-  final DateTime endDate;
-  final DateTime updatedAt;
-  final DateTime createdAt;
+class CampaignResponse extends CampaignModel{
+  final AttachmentModel attachment;
 
-  CampaignModel({
-    required this.campaignId,
-    required this.userId,
-    required this.title,
-    required this.description,
-    required this.budget,
-    required this.status,
-    required this.startDate,
-    required this.endDate,
-    required this.updatedAt,
-    required this.createdAt,
+  CampaignResponse({
+    required super.campaignId,
+    required super.userId,
+    required super.attachmentId,
+    required super.title,
+    required super.description,
+    required super.budget,
+    required super.status,
+    required super.startDate,
+    required super.endDate,
+    required this.attachment
   });
 
-  factory CampaignModel.fromJson(Map<String, dynamic> json) {
-    return CampaignModel(
-      campaignId: json["campaign_id"],
-      userId: json["user_id"],
-      title: json["title"],
-      description: json["description"],
-      budget: json["budget"],
-      status: json["status"],
-      startDate: DateTime.parse(json["start_date"]),
-      endDate: DateTime.parse(json["end_date"]),
-      updatedAt: DateTime.parse(json["updatedAt"]),
-      createdAt: DateTime.parse(json["createdAt"]),
-    );
-  }
-}
-
-// Kelas ini secara spesifik mem-parsing 'data' dari ResponseModel
-// menjadi sebuah CampaignModel.
-class CampaignResponse {
-  final CampaignModel campaign;
-
-  CampaignResponse({required this.campaign});
-
-  // Factory constructor yang akan kita panggil dari ApiService
-  // Ia menerima Map<String, dynamic> yang merupakan isi dari 'data'
-  factory CampaignResponse.fromData(Map<String, dynamic> data) {
+  factory CampaignResponse.getCampaign(Map<String, dynamic> object) {
     return CampaignResponse(
-      campaign: CampaignModel.fromJson(data),
+      campaignId: object["campaign_id"],
+      userId: object["user_id"],
+      attachmentId: 1,
+      title: object["title"],
+      description: object["description"],
+      budget: object["budget"],
+      status: object["status"],
+      startDate: DateTime.parse(object["start_date"]),
+      endDate: DateTime.parse(object["end_date"]),
+      attachment: AttachmentModel(attachmentId: 1, file: file, uploadedBy: 1)
     );
   }
 }

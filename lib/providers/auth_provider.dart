@@ -59,7 +59,7 @@ class AuthProvider extends ChangeNotifier {
 
       print("Login response received: ${loginResponse.generateToken}");
       _token = loginResponse.generateToken;
-      _userId = loginResponse.userId;
+      _userId = loginResponse.userId.toString();
       _email = loginResponse.email;
       _isAuthenticated = true;
 

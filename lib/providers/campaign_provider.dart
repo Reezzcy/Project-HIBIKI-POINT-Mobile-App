@@ -11,12 +11,12 @@ class CampaignProvider extends ChangeNotifier {
   // Variabel untuk mengelola state UI
   bool _isLoading = false;
   String? _error;
-  List<CampaignModel> _campaigns = [];
+  List<CampaignResponse> _campaigns = [];
 
   // Getter agar UI bisa mengakses state ini (read-only)
   bool get isLoading => _isLoading;
   String? get error => _error;
-  List<CampaignModel> get campaigns => _campaigns;
+  List<CampaignResponse> get campaigns => _campaigns;
 
   /// READ: Mengambil semua campaign dari backend
   Future<void> fetchCampaigns() async {
@@ -48,7 +48,7 @@ class CampaignProvider extends ChangeNotifier {
 
       // Panggil repository untuk membuat data baru
       final response = await _repository.createCampaign(data, token);
-      final newCampaign = response.campaign;
+      final newCampaign = response;
 
       // Tambahkan campaign baru ke awal list agar langsung muncul di UI
       _campaigns.insert(0, newCampaign);
@@ -69,7 +69,7 @@ class CampaignProvider extends ChangeNotifier {
       if (token == null) throw Exception("Anda belum login");
 
       final response = await _repository.updateCampaign(campaignId, data, token);
-      final updatedCampaign = response.campaign;
+      final updatedCampaign = response;
 
       // Cari index dari campaign yang lama di dalam list
       final index = _campaigns.indexWhere((c) => c.campaignId == campaignId);

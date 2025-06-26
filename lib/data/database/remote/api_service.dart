@@ -163,33 +163,19 @@ class ApiService {
     return RegisterResponse.postAuthRegister(responseModel.data);
   }
 
-  Future<CampaignResponse> createCampaign(
-      Map<String, dynamic> campaignData, {
-        String? token,
-      }) async {
-    final headers = {
-      'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
-    };
-
+  Future<CampaignResponse> createCampaign(Map<String, dynamic> campaignData, {String? token,}) async {
+    final headers = {'Content-Type': 'application/json', if (token != null) 'Authorization': 'Bearer $token'};
     final responseModel = await post('/api/campaign/', campaignData, headers: headers);
 
     if (responseModel.data is Map<String, dynamic>) {
-      return CampaignResponse.fromData(responseModel.data);
+      return CampaignResponse.getCampaign(responseModel.data);
     } else {
       throw Exception('Invalid data format received from server');
     }
   }
 
-  Future<CampaignListResponse> fetchAllCampaigns({
-    required String token,
-  }) async {
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
-
-    // Panggil metode GET generik yang sudah Anda miliki
+  Future<CampaignListResponse> fetchAllCampaigns({required String token,}) async {
+    final headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'};
     final responseModel = await get('/api/campaign/', headers: headers);
 
     // Ekstrak payload 'data' dari ResponseModel
@@ -200,30 +186,19 @@ class ApiService {
     }
   }
 
-  Future<CampaignResponse> updateCampaign({
-    required int campaignId,
-    required Map<String, dynamic> campaignData,
-    required String token,
-  }) async {
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
-    // Endpoint biasanya menyertakan ID dari item yang akan diupdate
+  Future<CampaignResponse> updateCampaign({required int campaignId, required Map<String, dynamic> campaignData, required String token,}) async {
+    final headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'};
     final responseModel = await put('/api/campaign/$campaignId', campaignData, headers: headers);
+
     if (responseModel.data is Map<String, dynamic>) {
-      return CampaignResponse.fromData(responseModel.data);
+      return CampaignResponse.getCampaign(responseModel.data);
     } else {
       throw Exception('Invalid data format for updated campaign received');
     }
   }
 
-  Future<ResponseModel> deleteCampaign({
-    required int campaignId,
-    required String token,
-  }) async {
+  Future<ResponseModel> deleteCampaign({required int campaignId, required String token,}) async {
     final headers = {'Authorization': 'Bearer $token'};
-    // Endpoint hanya memerlukan ID
     return await delete('/api/campaign/$campaignId', headers: headers);
   }
 }

@@ -74,7 +74,7 @@ class _CampaignAddFormState extends State<CampaignAddForm> {
 
       // Tampilkan pesan sukses dan kembali ke halaman sebelumnya
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Campaign "${response.campaign.title}" created successfully!')),
+        SnackBar(content: Text('Campaign "${response.title}" created successfully!')),
       );
       Navigator.pop(context, true); // Kirim 'true' untuk menandakan sukses
 
