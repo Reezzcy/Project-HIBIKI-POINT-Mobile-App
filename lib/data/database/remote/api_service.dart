@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
+
 import 'package:project_hibiki_point_mobile_app/data/response/login_google_response.dart';
 import 'package:project_hibiki_point_mobile_app/data/response/login_response.dart';
 import 'package:project_hibiki_point_mobile_app/data/response/register_reponse.dart';
 import 'package:project_hibiki_point_mobile_app/data/response/response_model.dart';
 import 'package:project_hibiki_point_mobile_app/data/response/campaign_response.dart';
+import 'package:project_hibiki_point_mobile_app/data/response/campaign_list_response.dart';
 
 class ApiService {
   // Singleton pattern
@@ -62,6 +64,45 @@ class ApiService {
     } catch (e) {
       print('POST request failed with error: $e');
       throw Exception('POST request failed: $e');
+    }
+  }
+
+  Future<ResponseModel> put(String endpoint, dynamic data, {Map<String, String>? headers}) async {
+    try {
+      final client = _createClient();
+      print('Sending PUT to: $_baseUrl$endpoint');
+
+      final response = await client.put(
+        Uri.parse('$_baseUrl$endpoint'),
+        body: json.encode(data),
+        headers: headers ?? {'Content-Type': 'application/json'},
+      );
+
+      client.close();
+      print('Response status: ${response.statusCode}');
+      return _processResponse(response);
+    } catch (e) {
+      print('PUT request failed with error: $e');
+      throw Exception('PUT request failed: $e');
+    }
+  }
+
+  Future<ResponseModel> delete(String endpoint, {Map<String, String>? headers}) async {
+    try {
+      final client = _createClient();
+      print('Sending DELETE to: $_baseUrl$endpoint');
+
+      final response = await client.delete(
+        Uri.parse('$_baseUrl$endpoint'),
+        headers: headers ?? {'Content-Type': 'application/json'},
+      );
+
+      client.close();
+      print('Response status: ${response.statusCode}');
+      return _processResponse(response);
+    } catch (e) {
+      print('DELETE request failed with error: $e');
+      throw Exception('DELETE request failed: $e');
     }
   }
 
@@ -122,25 +163,42 @@ class ApiService {
     return RegisterResponse.postAuthRegister(responseModel.data);
   }
 
-  Future<CampaignResponse> createCampaign(
-      Map<String, dynamic> campaignData, {
-        String? token, // Opsional jika endpoint memerlukan otentikasi
-      }) async {
-    // Menyiapkan header, tambahkan token jika ada
-    final headers = {
-      'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
-    };
-
-    // Panggil metode post generik Anda
+  Future<CampaignResponse> createCampaign(Map<String, dynamic> campaignData, {String? token,}) async {
+    final headers = {'Content-Type': 'application/json', if (token != null) 'Authorization': 'Bearer $token'};
     final responseModel = await post('/api/campaign/', campaignData, headers: headers);
 
-    // Ekstrak payload 'data' dari ResponseModel dan teruskan ke konstruktor CampaignResponse
-    // Pastikan responseModel.data tidak null dan merupakan Map
     if (responseModel.data is Map<String, dynamic>) {
-      return CampaignResponse.fromData(responseModel.data);
+      return CampaignResponse.getCampaign(responseModel.data);
     } else {
       throw Exception('Invalid data format received from server');
     }
+  }
+
+  Future<CampaignListResponse> fetchAllCampaigns({required String token,}) async {
+    final headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'};
+    final responseModel = await get('/api/campaign/', headers: headers);
+
+    // Ekstrak payload 'data' dari ResponseModel
+    if (responseModel.data is List) {
+      return CampaignListResponse.fromData(responseModel.data);
+    } else {
+      throw Exception('Format data tidak valid untuk daftar campaign');
+    }
+  }
+
+  Future<CampaignResponse> updateCampaign({required int campaignId, required Map<String, dynamic> campaignData, required String token,}) async {
+    final headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'};
+    final responseModel = await put('/api/campaign/$campaignId', campaignData, headers: headers);
+
+    if (responseModel.data is Map<String, dynamic>) {
+      return CampaignResponse.getCampaign(responseModel.data);
+    } else {
+      throw Exception('Invalid data format for updated campaign received');
+    }
+  }
+
+  Future<ResponseModel> deleteCampaign({required int campaignId, required String token,}) async {
+    final headers = {'Authorization': 'Bearer $token'};
+    return await delete('/api/campaign/$campaignId', headers: headers);
   }
 }

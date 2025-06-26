@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project_hibiki_point_mobile_app/providers/auth_provider.dart';
+import 'package:project_hibiki_point_mobile_app/providers/campaign_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:project_hibiki_point_mobile_app/splash_screen.dart';
@@ -18,6 +19,7 @@ class HibikiPointApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => CampaignProvider()),
         // Add other providers as needed
       ],
       child: MaterialApp(

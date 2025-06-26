@@ -14,9 +14,9 @@ class RegisterResponse extends AuthModel {
   factory RegisterResponse.postAuthRegister(Map<String, dynamic> object) {
     return RegisterResponse(
         user: _parseUser(object['newUser']),
-        authId: object['id'].toString(),
+        authId: object['id'],
         email: object['email'],
-        userId: object['user_id'].toString()
+        userId: object['user_id']
     );
   }
 

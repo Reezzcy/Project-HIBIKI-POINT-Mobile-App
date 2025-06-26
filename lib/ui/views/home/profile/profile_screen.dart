@@ -33,7 +33,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 SizedBox(height: screenHeight * 0.015),
                 Text(
-                  'Nicolas Debrito', // Idealnya menggunakan data user dari AuthProvider
+                  authProvider.email ?? 'Username',
                   style: TextStyle(
                     fontSize: screenWidth * 0.045,
                     color: Colors.white,
@@ -41,7 +41,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  authProvider.email ?? 'nicolas@gmail.com',
+                  authProvider.email ?? 'email',
                   style: TextStyle(
                     fontSize: screenWidth * 0.035,
                     color: Colors.white70,

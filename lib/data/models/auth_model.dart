@@ -1,9 +1,9 @@
 import 'package:project_hibiki_point_mobile_app/data/models/user_model.dart';
 
 class AuthModel {
-  final String authId;
+  final int authId;
   final String email;
-  final String userId;
+  final int userId;
 
   AuthModel({
     required this.authId,
