@@ -1,11 +1,12 @@
 import 'dart:convert';
-
+import 'package:provider/provider.dart';
+import 'package:project_hibiki_point_mobile_app/providers/campaign_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:project_hibiki_point_mobile_app/data/models/campaign_model.dart';
-import 'package:project_hibiki_point_mobile_app/data/response/campaign_response.dart';
 import 'package:project_hibiki_point_mobile_app/res/colors.dart';
 import 'package:project_hibiki_point_mobile_app/ui/views/campaign/campaign_edit_form.dart';
+
 
 class CampaignDetailScreen extends StatefulWidget {
   final CampaignModel campaign;
@@ -74,7 +75,91 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
               Navigator.pop(context);
             },
             icon: const Icon(Icons.arrow_back_ios, color: AppColors.primaryBlack)
-        )
+        ),
+      actions: [
+        IconButton(
+          onPressed: () {
+            // Menampilkan dialog konfirmasi sebelum menghapus
+            _showDeleteConfirmationDialog(context);
+          },
+          icon: const Icon(
+            Icons.delete_outline,
+            color: AppColors.primaryBlack,
+            size: 28, // Ukuran ikon bisa disesuaikan
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context) {
+    // Menggunakan StatefulBuilder agar dialog bisa punya state loading sendiri
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Jangan biarkan dialog ditutup saat proses loading
+      builder: (BuildContext ctx) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            // Ambil provider di dalam builder agar punya context yang tepat
+            final campaignProvider = Provider.of<CampaignProvider>(context, listen: false);
+            bool isLoading = campaignProvider.isLoading; // Pantau state loading dari provider
+
+            return AlertDialog(
+              title: const Text('Hapus Campaign'),
+              content: isLoading
+                  ? const Row( // Tampilkan loading indicator jika sedang menghapus
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(width: 20),
+                  Text("Menghapus..."),
+                ],
+              )
+                  : Text( // Tampilkan teks konfirmasi
+                  'Apakah Anda yakin ingin menghapus campaign "${widget.campaign.title}"?'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: isLoading ? null : () => Navigator.of(ctx).pop(),
+                  child: const Text('Batal'),
+                ),
+                TextButton(
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                    // Panggil fungsi delete dari provider
+                    final success = await campaignProvider.deleteCampaign(widget.campaign.campaignId);
+
+                    if (!mounted) return;
+
+                    if (success) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Campaign berhasil dihapus'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                      // Tutup dialog
+                      Navigator.of(ctx).pop();
+                      // Tutup halaman detail untuk kembali ke daftar
+                      Navigator.of(context).pop();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Gagal menghapus: ${campaignProvider.error}'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      // Tutup dialog, biarkan user tetap di halaman detail
+                      Navigator.of(ctx).pop();
+                    }
+                  },
+                  child: const Text('Hapus', style: TextStyle(color: Colors.red)),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 
@@ -84,8 +169,6 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
       height: 50,
       child: FloatingActionButton(
         onPressed: () {
-          // --- FUNGSI EDIT DI SINI ---
-          // Arahkan ke halaman form edit, kirim data campaign saat ini
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return CampaignEditForm(campaignToEdit: widget.campaign);
           }));

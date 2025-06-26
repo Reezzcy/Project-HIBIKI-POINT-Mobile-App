@@ -148,7 +148,7 @@ class _CampaignScreenState extends State<CampaignScreen> {
       onTap: () {
         Navigator.push(
           context, 
-          MaterialPageRoute(builder: (context) => CampaignDetailScreen(campaign: campaign))
+          MaterialPageRoute(builder: (context) => CampaignDetailScreen(campaign: campaign, attachmentFile: campaign.attachment.file))
         ).then((_) {
           // Refresh campaigns when returning from detail screen
           Provider.of<CampaignProvider>(context, listen: false).fetchCampaigns();
